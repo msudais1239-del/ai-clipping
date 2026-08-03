@@ -1,0 +1,28 @@
+# Render manifest for deploying backend + worker
+
+services:
+  - type: web
+    name: ai-clipping-backend
+    env: docker
+    branch: starter/scaffold
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    startCommand: "npx ts-node src/server.ts"
+    env:
+      - key: JWT_SECRET
+        generate: true
+      - key: DEFAULT_USER_EMAIL
+        value: "neon32206@gmail.com"
+      - key: DEFAULT_USER_PASSWORD
+        value: "changeme123"
+
+  - type: worker
+    name: ai-clipping-worker
+    env: docker
+    branch: starter/scaffold
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    startCommand: "node worker.js"
+    env:
+      - key: JWT_SECRET
+        generate: true
