@@ -1,17 +1,23 @@
-# Use official node image as base
-FROM node:20-alpine
+FROM node:20-bullseye-slim
+
+# Install ffmpeg and ca-certificates
+RUN apt-get update \
+  && apt-get install -y ffmpeg ca-certificates --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# install dependencies
+# copy package.json and install dependencies
 COPY backend/package.json ./
 RUN npm install --production
 
-# copy source
+# copy backend source
 COPY backend ./
 
-# build (if you add a build step)
-# RUN npm run build
+# Ensure uploads and jobs directories exist
+RUN mkdir -p uploads jobs outputs
 
 EXPOSE 8080
-CMD ["node", "src/server.ts"]
+
+# Run the TypeScript source using ts-node via npx (ts-node is in devDependencies in scaffold; npx will install it if needed)
+CMD ["npx", "ts-node", "src/server.ts"]
